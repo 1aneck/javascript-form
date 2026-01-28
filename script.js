@@ -6,6 +6,8 @@ const returnTicket = document.getElementById("returnTicket");
 const budgetInput = document.getElementById("budget");
 const finalPrice = document.getElementById("finalPriceDisplay");
 const calculateBtn = document.getElementById("calculateBtn");
+const textArea = document.getElementById("textArea");
+const bookingForm = document.getElementById("bookingForm");
 
 const classRadios = document.querySelectorAll('input[name="classCategory"]');
 
@@ -58,25 +60,27 @@ function renderPrice(price) {
     return;
   }
 
-  finalPrice.textContent = `Total: ${price.toLocaleString()} CZK`;
+  finalPrice.textContent = `Total: ${price} CZK`;
   finalPrice.classList.add("text-success");
 }
 
 function checkBudget(price) {
   const budget = Number(budgetInput.value);
 
-  if (!budget || budget <= 0) return;
-
-  if (price > budget) {
-    finalPrice.textContent = "You are exceeding your budget!";
-    finalPrice.classList.remove("text-success");
-    finalPrice.classList.add("text-danger");
+  if (!budgetInput.value || budget <= 0) {
+    return;
+  }
+  if (price <= budget) {
+    finalPrice.textContent += ` (Within your budget)`;
+    finalPrice.classList.replace("text-danger", "text-success");
+  } else {
+    finalPrice.textContent = `Total ${price.toLocaleString()} CZK. You are exceeding your budget ${budget.toLocaleString()} CZK.`;
+    finalPrice.classList.replace("text-success", "text-danger");
   }
 }
 
 function update() {
   const price = calculatePrice();
-
   renderPrice(price);
   checkBudget(price);
 }
@@ -88,10 +92,19 @@ const inputs = [
   ...classRadios,
 ];
 
-inputs.forEach((el) => {
-  el.addEventListener("change", update);
-});
+bookingForm.addEventListener("submit", (e) => e.preventDefault());
 
 calculateBtn.addEventListener("click", update);
 
 finalPrice.textContent = "";
+
+const forbiddenChars = /[?{}<>#§$%^&*]/g;
+textArea.addEventListener("input", function () {
+  const start = this.selectionStart;
+  const end = this.selectionEnd;
+
+  if (forbiddenChars.test(this.value)) {
+    this.value = this.value.replace(forbiddenChars, "");
+    this.setSelectionRange(start - 1, end - 1);
+  }
+});

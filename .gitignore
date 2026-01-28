@@ -1,0 +1,10 @@
+# Závislostí (knihovny) - tohle je nejdůležitější
+node_modules/
+
+# Systémové soubory (volitelné, ale doporučené)
+.DS_Store
+Thumbs.db
+
+# Logy a dočasné soubory
+npm-debug.log*
+.env
